@@ -1,25 +1,25 @@
 #!/bin/sh
 
-echo "cleaning build artifacts"
+printf  "\033[1;33mcleaning build artifacts\033[0m\n"
 make clean >> /dev/null
 
-echo "running make"
+printf "\033[1;33mrunning make\033[0m\n"
 make >> /dev/null
 
-echo "running tests"
+printf "\033[1;33mrunning tests\033[0m (may ask for password)\n"
 
 sudo ./kill_child_on_exit_unit_tests
 
 if [ $? -ne 0 ]; then
-    echo "unit test failed."
+    printf "\033[1;31munit test failed.\033[0m\n"
     exit 1
 fi
 
 ./kill_child_on_exit_unit_tests
 
 if [ $? -ne 0 ]; then
-    echo "unit test failed."
+    printf "\033[1;31munit test failed.\033[0m\n"
     exit 1
 fi
 
-echo "test suite completed."
+printf "\033[1;32mtest suite completed.\033[0m\n"
