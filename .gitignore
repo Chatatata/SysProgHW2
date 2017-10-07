@@ -1,0 +1,4 @@
+/obj
+kill_child_on_exit_unit_tests
+*.swp
+*.o
