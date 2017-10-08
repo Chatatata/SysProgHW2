@@ -1,0 +1,98 @@
+diff -r linux-source-3.13.0/arch/x86/boot/compressed/head_32.S Desktop/linux-source-3.13.0.bak/arch/x86/boot/compressed/head_32.S
+229a230
+> #ifdef CONFIG_EFI_STUB
+235a237
+> #endif
+Only in Desktop/linux-source-3.13.0.bak/arch/x86/include: generated
+diff -r linux-source-3.13.0/arch/x86/syscalls/syscall_32.tbl Desktop/linux-source-3.13.0.bak/arch/x86/syscalls/syscall_32.tbl
+363a364,365
+> 355	i386	kill_child_on_exit	sys_kill_child_on_exit
+> 
+Only in Desktop/linux-source-3.13.0.bak: .config
+Only in Desktop/linux-source-3.13.0.bak: .config.old
+Only in Desktop/linux-source-3.13.0.bak: debian
+Only in Desktop/linux-source-3.13.0.bak: ext
+Only in Desktop/linux-source-3.13.0.bak/include: config
+Only in Desktop/linux-source-3.13.0.bak/include: generated
+diff -r linux-source-3.13.0/include/linux/sched.h Desktop/linux-source-3.13.0.bak/include/linux/sched.h
+1467a1468
+>     int kill_child_on_exit; /* if non-zero parent kills child processes */
+diff -r linux-source-3.13.0/include/linux/syscalls.h Desktop/linux-source-3.13.0.bak/include/linux/syscalls.h
+851a852
+> asmlinkage long sys_kill_child_on_exit(pid_t pid, int flag);
+diff -r linux-source-3.13.0/kernel/exit.c Desktop/linux-source-3.13.0.bak/kernel/exit.c
+61a62,75
+> /*
+>  * The constant value of minimum nice value, which makes
+>  * kill_child_on_exit available on child process itself.
+>  */
+> #define PDEATH_CHILD_MIN_NICE 10
+> 
+> #define PDEATH_CHILD_MIN_PRIO (PDEATH_CHILD_MIN_NICE + 120)
+> 
+> /**
+>  * TASK_PERFORMS_PDEATH_SIGKILL - checks if task should propagate SIGKILL to its children when it dies
+>  * @t:      the task struct * to perform check
+>  */
+> #define TASK_PERFORMS_PDEATH_SIGKILL(t) (t->static_prio > PDEATH_CHILD_MIN_PRIO)
+> 
+706a721,748
+> 
+>     struct task_struct *child = NULL;
+>     struct list_head *h = NULL;
+> 
+>     printk(KERN_INFO "kill_child_on_exit: pid %d has flag %d, static_prio %d, is subject to operation: %d", tsk->pid, tsk->kill_child_on_exit, tsk->static_prio, tsk->kill_child_on_exit && TASK_PERFORMS_PDEATH_SIGKILL(tsk));
+> 
+>     /* 
+>      * FIXME: additional locking might be required in order to perform
+>      *        subsequent operations mutually exclusive.
+>      */
+> 
+>     /* set pdeath_signal to SIGKILL if it has appropriate nice value and flag */
+>     if (unlikely(tsk->kill_child_on_exit && TASK_PERFORMS_PDEATH_SIGKILL(tsk))) {
+>         printk(KERN_INFO "kill_child_on_exit: acquiring write lock with irq");
+>         write_lock_irq(&tasklist_lock);
+>         
+>         /* iterate over its children */
+>         list_for_each(h, &tsk->children) {
+>             child = list_entry(h, struct task_struct, sibling);
+>             child->pdeath_signal = SIGKILL;
+>             printk(KERN_INFO "kill_child_on_exit: did set pdeath_signal for child pid %d as %d", child->pid, child->pdeath_signal);
+>         }
+> 
+>         write_unlock_irq(&tasklist_lock);
+>         printk(KERN_INFO "kill_child_on_exit: released write lock with irq");
+>     }
+> 
+>     /* now perform exit */
+896c938
+< 	do_exit((error_code&0xff)<<8);
+---
+>     do_exit((error_code&0xff)<<8);
+diff -r linux-source-3.13.0/kernel/fork.c Desktop/linux-source-3.13.0.bak/kernel/fork.c
+1680a1681,1682
+>             /* the created process should have kill child flag as zero */
+>             p->kill_child_on_exit = 0;
+Only in Desktop/linux-source-3.13.0.bak: kernel_comp.sh
+diff -r linux-source-3.13.0/Makefile Desktop/linux-source-3.13.0.bak/Makefile
+540c540
+< core-y		:= usr/
+---
+> core-y		:= usr/ ext/
+Only in Desktop/linux-source-3.13.0.bak: Module.symvers
+Only in Desktop/linux-source-3.13.0.bak/scripts/basic: fixdep
+Only in Desktop/linux-source-3.13.0.bak/scripts: conmakehash
+Only in Desktop/linux-source-3.13.0.bak/scripts: kallsyms
+Only in Desktop/linux-source-3.13.0.bak/scripts/kconfig: conf
+Only in Desktop/linux-source-3.13.0.bak/scripts/kconfig: zconf.hash.c
+Only in Desktop/linux-source-3.13.0.bak/scripts/kconfig: zconf.lex.c
+Only in Desktop/linux-source-3.13.0.bak/scripts/kconfig: zconf.tab.c
+Only in Desktop/linux-source-3.13.0.bak/scripts/mod: devicetable-offsets.h
+Only in Desktop/linux-source-3.13.0.bak/scripts/mod: elfconfig.h
+Only in Desktop/linux-source-3.13.0.bak/scripts/mod: mk_elfconfig
+Only in Desktop/linux-source-3.13.0.bak/scripts/mod: modpost
+Only in Desktop/linux-source-3.13.0.bak/scripts: pnmtologo
+Only in Desktop/linux-source-3.13.0.bak/scripts/selinux/genheaders: genheaders
+Only in Desktop/linux-source-3.13.0.bak/scripts/selinux/mdp: mdp
+Only in Desktop/linux-source-3.13.0.bak/scripts: sortextable
+Only in Desktop/linux-source-3.13.0.bak: .version
